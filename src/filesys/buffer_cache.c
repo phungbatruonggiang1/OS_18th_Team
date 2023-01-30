@@ -7,19 +7,19 @@
 #define BUFFER_CACHE_SIZE 64
 
 struct buffer_cache_entry_t {
-  bool occupied;  // true only if this entry is valid cache entry
+  bool occupied;  
 
   block_sector_t disk_sector;
   uint8_t buffer[BLOCK_SECTOR_SIZE];
 
-  bool dirty;     // dirty bit
-  bool access;    // reference bit, for clock algorithm
+  bool dirty;     
+  bool access;    
 };
 
-/* Buffer cache entries. */
+
 static struct buffer_cache_entry_t cache[BUFFER_CACHE_SIZE];
 
-/* A global lock for synchronizing buffer cache operations. */
+
 static struct lock buffer_cache_lock;
 
 void
@@ -27,7 +27,7 @@ buffer_cache_init (void)
 {
   lock_init (&buffer_cache_lock);
 
-  // initialize entries
+  
   size_t i;
   for (i = 0; i < BUFFER_CACHE_SIZE; ++ i)
   {
@@ -35,10 +35,7 @@ buffer_cache_init (void)
   }
 }
 
-/**
- * An internal method for flushing back the cache entry into disk.
- * Must be called with the lock held.
- */
+
 static void
 buffer_cache_flush (struct buffer_cache_entry_t *entry)
 {
@@ -54,7 +51,7 @@ buffer_cache_flush (struct buffer_cache_entry_t *entry)
 void
 buffer_cache_close (void)
 {
-  // flush buffer cache entries
+
   lock_acquire (&buffer_cache_lock);
 
   size_t i;
@@ -68,10 +65,6 @@ buffer_cache_close (void)
 }
 
 
-/**
- * Lookup the cache entry, and returns the pointer of buffer_cache_entry_t,
- * or NULL in case of cache miss. (simply traverse the cache entries)
- */
 static struct buffer_cache_entry_t*
 buffer_cache_lookup (block_sector_t sector)
 {
